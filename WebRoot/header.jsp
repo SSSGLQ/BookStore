@@ -22,11 +22,11 @@
   ${msg}
   <a href="${pageContext.request.contextPath}">首页</a>
   <c:if test="${sessionScope.user==null}">
-	  <a href="#">注册</a>
-	  <a href="#">登录</a>
+	  <a href="${pageContext.request.contextPath}/regist.jsp">注册</a>
+	  <a href="${pageContext.request.contextPath}/login.jsp">登录</a>
   </c:if>
   <c:if test="${sessionScope.user!=null}">
-  		欢迎您：${sessionScope.user.username}<a href="#">注销</a>
+  		欢迎您：${sessionScope.user.username}<a href="${pageContext.request.contextPath}/servlet/ClientServlet?op=logout">注销</a>
   </c:if>
   
   <a href="${pageContext.request.contextPath}">我的订单</a>

@@ -12,10 +12,13 @@ import javax.servlet.http.HttpSession;
 
 import com.itheima.domain.Book;
 import com.itheima.domain.Category;
+import com.itheima.domain.Customer;
 import com.itheima.service.BookService;
 import com.itheima.service.CategoryService;
+import com.itheima.service.CustomerService;
 import com.itheima.service.impl.BookServiceImpl;
 import com.itheima.service.impl.CategoryServiceImpl;
+import com.itheima.service.impl.CustomerServiceImpl;
 import com.itheima.utils.PageBean;
 import com.itheima.web.form.Cart;
 
@@ -23,10 +26,11 @@ public class ClientServlet extends HttpServlet {
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
-	
+	private CustomerService customerservice = new CustomerServiceImpl();
 	private static String SHOWINDEX = "showIndex";
 	private static String BUYBOOK = "buyBook";
 	private static String SHOWCATEGORYPAGERECORDS = "showCategoryPageRecords";
+	private static String LOGIN = "login";
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -41,7 +45,34 @@ public class ClientServlet extends HttpServlet {
 				showCategoryPageRecords(request,response);
 			}else if(BUYBOOK.equals(op)){
 				buyBook(request,response);
+			}else if(LOGIN.equals(op)){
+				login(request,response);
 			}
+	}
+
+	/**
+	 * 用户登陆
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 */
+	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		//1.获取参数
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		//2.调用业务逻辑，实现查询操作
+		Customer c = customerservice.login(username,password);
+		//3.判断结果
+		if(c==null){
+			//5.如果失败，返回登陆页，继续登陆
+			response.getWriter().write("登陆失败，可能是用户名，密码，未激活原因引起的");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/login.jsp");
+			return ;
+		}else{
+			//4.如果正确，将用户信息保存到session,user的名字要与header.jsp中保持一致
+			request.getSession().setAttribute("user", c);
+			response.sendRedirect(request.getContextPath());//回到首页
+		}
 	}
 
 	/**
