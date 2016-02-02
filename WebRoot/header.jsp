@@ -17,7 +17,7 @@
   <body>
   <br/>
   <br/>
-  <h1>XX网店</h1>
+  <h1>商品小站</h1>
   <br/>
   ${msg}
   <a href="${pageContext.request.contextPath}">首页</a>

@@ -31,6 +31,7 @@ public class ClientServlet extends HttpServlet {
 	private static String BUYBOOK = "buyBook";
 	private static String SHOWCATEGORYPAGERECORDS = "showCategoryPageRecords";
 	private static String LOGIN = "login";
+	private static String LOGOUT = "logout";
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -47,7 +48,21 @@ public class ClientServlet extends HttpServlet {
 				buyBook(request,response);
 			}else if(LOGIN.equals(op)){
 				login(request,response);
+			}else if(LOGOUT.equals(op)){
+				logout(request,response);
 			}
+	}
+
+	/**
+	 * ×¢Ïú
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 */
+	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		//Çå³ýsession
+		request.getSession().removeAttribute("user");
+		response.sendRedirect(request.getContextPath());
 	}
 
 	/**
