@@ -66,10 +66,24 @@ public class ClientServlet extends HttpServlet {
 	 * 注册用户时激活用户
 	 * @param request
 	 * @param response
+	 * @throws IOException 
 	 */
 	private void actived(HttpServletRequest request,
-			HttpServletResponse response) {
-		
+			HttpServletResponse response) throws IOException {
+		//1.得到激活码
+		String code = request.getParameter("code");
+		//2.根据激活码查询数据库完之后告诉用户是否注册成功
+		boolean flag = customerservice.active(code);
+		if(flag){
+			//激活成功
+			//2.提示用户激活并进入到主页面
+			response.getWriter().write("激活成功，2秒后跳转到登录面");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/login.jsp");
+		}else{
+			//激活失败
+			response.getWriter().write("激活失败，请确认激活码并重新激活");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath());
+		}
 	}
 
 	/**

@@ -10,4 +10,8 @@ public interface CustomerDao {
 
 	Customer findCustomerByName(String username);
 
+	void updateCustomer(Customer c);
+
+	Customer findCustomerByCode(String code);
+
 }

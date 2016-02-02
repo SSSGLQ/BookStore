@@ -8,5 +8,5 @@ public interface CustomerService {
 
 	Boolean regist(Customer c);
 
-	
+	boolean active(String code);
 }

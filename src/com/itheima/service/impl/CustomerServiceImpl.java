@@ -23,5 +23,19 @@ public class CustomerServiceImpl implements CustomerService{
 			return false;
 		}
 	}
+	public boolean active(String code) {
+		//1.查询数据库是否有这个激活码的用户
+		Customer c = dao.findCustomerByCode(code);
+		//2.如果有，激活用户
+		if(c!=null){
+			//说明该激活码正确，有相应的用户信息
+			c.setActived(1);
+			dao.updateCustomer(c);//修改激活状态
+		}else{
+			//激活码有误
+			return false;
+		}
+		return true;
+	}
 
 }

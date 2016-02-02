@@ -33,7 +33,7 @@ public class SendMailTreadUtils extends Thread{
 			message.setFrom(new InternetAddress("faith_yee@163.com"));
 			message.setRecipients(RecipientType.TO,c.getEmail());
 			message.setSubject("这是来自商品小站的一封激活邮件");
-			message.setText("欢迎您注册为商品小站会员，请点击链接进行激活，如无法点击请复制链接到地址栏进行激活:<a href='http//localhost:8080/bookstore/servlet/ClientServlet?op=actived&c"+c.getCode()+"'>激活</a>");
+			message.setText("欢迎您注册为商品小站会员，请点击链接进行激活，如无法点击请复制链接到地址栏进行激活:<a href='http//localhost:8080/bookstore/servlet/ClientServlet?op=actived&code="+c.getCode()+"'>激活</a>");
 			Transport tp = session.getTransport();
 			tp.connect("faith_yee","yw2633275");			
 			tp.sendMessage(message, message.getAllRecipients());
