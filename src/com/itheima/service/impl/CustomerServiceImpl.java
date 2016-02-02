@@ -13,5 +13,15 @@ public class CustomerServiceImpl implements CustomerService{
 		Customer c = dao.findCustomerByUseruameAndPassword(username,Md5Utils.encode(password));
 		return c;
 	}
+	public Boolean regist(Customer c) {
+		Customer customer = dao.findCustomerByName(c.getUsername());//查询用户名是否已经被注册
+		if(customer==null){
+			c.setPassword(Md5Utils.encode(c.getPassword()));//注册时，数据库中存入的是密文
+			dao.saveCustomer(c);
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 }

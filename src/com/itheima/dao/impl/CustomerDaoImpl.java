@@ -19,5 +19,22 @@ public class CustomerDaoImpl implements CustomerDao {
 			throw new RuntimeException(e);
 		}
 	}
+	public void saveCustomer(Customer c) {
+		try {
+			qr.update("insert into customer values (?,?,?,?,?,?,?,?,?)",c.getId(),c.getUsername(),c.getPassword(),
+					c.getPhone(),c.getAddress(),c.getEmail(),c.getActived(),c.getCode(),c.getRole());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	public Customer findCustomerByName(String username) {
+		try {
+			return qr.query("select * from customer where username=?", new BeanHandler<Customer>(Customer.class),username);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
 
 }

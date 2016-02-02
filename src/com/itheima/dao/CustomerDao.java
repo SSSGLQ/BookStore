@@ -6,4 +6,8 @@ public interface CustomerDao {
 
 	Customer findCustomerByUseruameAndPassword(String username, String encode);
 
+	void saveCustomer(Customer c);
+
+	Customer findCustomerByName(String username);
+
 }

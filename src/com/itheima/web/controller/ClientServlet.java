@@ -19,7 +19,10 @@ import com.itheima.service.CustomerService;
 import com.itheima.service.impl.BookServiceImpl;
 import com.itheima.service.impl.CategoryServiceImpl;
 import com.itheima.service.impl.CustomerServiceImpl;
+import com.itheima.utils.IDGenerator;
 import com.itheima.utils.PageBean;
+import com.itheima.utils.SendMailTreadUtils;
+import com.itheima.utils.WebUtils;
 import com.itheima.web.form.Cart;
 
 public class ClientServlet extends HttpServlet {
@@ -32,6 +35,8 @@ public class ClientServlet extends HttpServlet {
 	private static String SHOWCATEGORYPAGERECORDS = "showCategoryPageRecords";
 	private static String LOGIN = "login";
 	private static String LOGOUT = "logout";
+	private static String REGIST = "regist";
+	private static String ACTIVED = "actived";
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -50,7 +55,55 @@ public class ClientServlet extends HttpServlet {
 				login(request,response);
 			}else if(LOGOUT.equals(op)){
 				logout(request,response);
+			}else if(REGIST.equals(op)){
+				regist(request,response);
+			}else if(ACTIVED.equals(op)){
+				actived(request,response);
 			}
+	}
+
+	/**
+	 * 注册用户时激活用户
+	 * @param request
+	 * @param response
+	 */
+	private void actived(HttpServletRequest request,
+			HttpServletResponse response) {
+		
+	}
+
+	/**
+	 * 页面注册
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 */
+	private void regist(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		//1.封装注册页面的参数
+		Customer c = WebUtils.fillBean(request, Customer.class);//注意里面的值不全。一部分值还要手动赋值
+		
+		//2.设置其他信息
+		c.setId(IDGenerator.genId());
+		c.setCode(IDGenerator.genCode());
+		c.setActived(0);//未激活
+		c.setRole(0);//普通用户
+		
+		Boolean flag = customerservice.regist(c);
+		
+		if(flag){
+			//注册成功
+			//1.启动发送邮件的线程
+			SendMailTreadUtils sendMain = new SendMailTreadUtils(c);
+			sendMain.start();
+			
+			//2.提示用户激活并进入到主页面
+			response.getWriter().write("注册成功，请登录邮箱进行激活，2秒后跳转到登录面");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/login.jsp");
+		}else{
+			//注册失败
+			response.getWriter().write("注册失败，用户名可能存在，2秒后跳转到注册页面重新注册");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/regist.jsp");
+		}
 	}
 
 	/**

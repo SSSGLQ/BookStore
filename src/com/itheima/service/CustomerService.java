@@ -6,5 +6,7 @@ public interface CustomerService {
 
 	Customer login(String username, String password);
 
+	Boolean regist(Customer c);
+
 	
 }

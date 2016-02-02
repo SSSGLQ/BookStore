@@ -3,6 +3,7 @@
 <br/>
 <br/>
 	<h1>新用户注册</h1>
+	<center>
 	<form action="${pageContext.request.contextPath}/servlet/ClientServlet?op=regist" method="post">
 	    <table width="438" border="1">
 	    	<tr>
@@ -42,5 +43,6 @@
 	    	</tr>
 	    </table>
 	   </form>
+	   </center>
   </body>
 </html>
