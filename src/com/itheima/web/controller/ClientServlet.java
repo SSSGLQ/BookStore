@@ -2,7 +2,10 @@ package com.itheima.web.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,23 +16,31 @@ import javax.servlet.http.HttpSession;
 import com.itheima.domain.Book;
 import com.itheima.domain.Category;
 import com.itheima.domain.Customer;
+import com.itheima.domain.Orders;
+import com.itheima.domain.OrdersItem;
 import com.itheima.service.BookService;
 import com.itheima.service.CategoryService;
 import com.itheima.service.CustomerService;
+import com.itheima.service.OrdersService;
 import com.itheima.service.impl.BookServiceImpl;
 import com.itheima.service.impl.CategoryServiceImpl;
 import com.itheima.service.impl.CustomerServiceImpl;
+import com.itheima.service.impl.OrdersServiceImpl;
 import com.itheima.utils.IDGenerator;
 import com.itheima.utils.PageBean;
 import com.itheima.utils.SendMailTreadUtils;
 import com.itheima.utils.WebUtils;
 import com.itheima.web.form.Cart;
+import com.itheima.web.form.CartItem;
 
 public class ClientServlet extends HttpServlet {
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
 	private CustomerService customerservice = new CustomerServiceImpl();
+	private OrdersService os = new OrdersServiceImpl();
+	
+	
 	private static String SHOWINDEX = "showIndex";
 	private static String BUYBOOK = "buyBook";
 	private static String SHOWCATEGORYPAGERECORDS = "showCategoryPageRecords";
@@ -37,6 +48,7 @@ public class ClientServlet extends HttpServlet {
 	private static String LOGOUT = "logout";
 	private static String REGIST = "regist";
 	private static String ACTIVED = "actived";
+	private static String GENORDERS = "genOrders";
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -59,7 +71,70 @@ public class ClientServlet extends HttpServlet {
 				regist(request,response);
 			}else if(ACTIVED.equals(op)){
 				actived(request,response);
+			}else if(GENORDERS.equals(op)){
+				genOrders(request,response);
 			}
+	}
+
+	/**
+	 * 去结算下的生成订单：生成当前登陆下的订单
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void genOrders(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		//1.如果用户没登陆，不能生成订单
+		HttpSession session = request.getSession();
+		Customer c = (Customer) session.getAttribute("user");
+		if(c==null){
+			response.getWriter().write("您没有登陆，2秒后调转到登陆页");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/login.jsp");
+			return ;
+		}
+		
+		//2.如果登陆了，生成订单
+		//要生成订单，就必须拿到购物车
+		Cart cart = (Cart) session.getAttribute("cart");
+		System.out.println(cart);
+		//购物车对应订单（Orders）   CartItem对应（OrdersItem）
+		Orders o = new Orders();
+		o.setId(IDGenerator.genId());
+		o.setC(c);
+		o.setNum(cart.getTotleNum());//总数量
+		o.setPrice(cart.getTotlePrice());//总价格
+		o.setOrdernum(IDGenerator.genCode());
+		o.setStatus(0);//0代表未付款
+		
+		//生成订单明细(Orders setItems(list);)
+		HashMap<String,CartItem> map = (HashMap<String, CartItem>) cart.getMap();
+		List<OrdersItem> list = new ArrayList<OrdersItem>();
+		for(Map.Entry<String, CartItem> item:map.entrySet()){
+			CartItem ci = item.getValue();//得到一个明细
+			OrdersItem oi = new OrdersItem();//生成一个订单明细
+			oi.setBook(ci.getBook());
+			oi.setNum(ci.getNum());
+			oi.setPrice((float) ci.getTotalPrice());
+			oi.setId(IDGenerator.genId());
+			list.add(oi);
+		}
+		
+		//为订单添加订单明细
+		o.setItems(list);
+		
+		//保存订单及订单明细
+		boolean flag = os.saveOrders(o);
+		
+		if(flag){
+			request.setAttribute("o", o);//存储订单给jsp使用
+			System.out.println(o);
+			//转发到支付页面（pay.jsp）
+			request.getRequestDispatcher("/pay.jsp").forward(request, response);
+		}else{
+			response.getWriter().write("订单生成失败，2秒后回到主页");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath());
+		}
 	}
 
 	/**

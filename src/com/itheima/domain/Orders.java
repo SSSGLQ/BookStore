@@ -7,7 +7,7 @@ import java.util.List;
 public class Orders implements Serializable {
 	private String id;
 	private String ordernum;
-	private float price;
+	private double price;
 	private int num;
 	private int status;
 	private Customer c;
@@ -36,10 +36,10 @@ public class Orders implements Serializable {
 	public void setOrdernum(String ordernum) {
 		this.ordernum = ordernum;
 	}
-	public float getPrice() {
+	public double getPrice() {
 		return price;
 	}
-	public void setPrice(float price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 	public int getNum() {
@@ -66,5 +66,14 @@ public class Orders implements Serializable {
 	public void setItems(List<OrdersItem> items) {
 		this.items = items;
 	}
+
+	@Override
+	public String toString() {
+		return "Orders [id=" + id + ", ordernum=" + ordernum + ", price="
+				+ price + ", num=" + num + ", status=" + status + ", c=" + c
+				+ ", items=" + items + "]";
+	}
+	
+	
 	
 }

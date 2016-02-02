@@ -56,13 +56,20 @@ public class Cart implements Serializable {
 		totlePrice=0;//清零
 		for(Map.Entry<String, CartItem> item:map.entrySet()){
 			CartItem ci = item.getValue();
-			totleNum+=ci.getTotalPrice();//将各类的数量，求和得到总价格
+			totlePrice+=ci.getTotalPrice();//将各类的数量，求和得到总价格
 		}
 		return totlePrice;
 	}
 	public void setTotlePrice(double totlePrice) {
 		this.totlePrice = totlePrice;
 	}
+
+	@Override
+	public String toString() {
+		return "Cart [map=" + map + ", totleNum=" + totleNum + ", totlePrice="
+				+ totlePrice + "]";
+	}
+	
 	
 	
 }
