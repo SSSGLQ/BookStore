@@ -43,3 +43,26 @@ update customer set role=1 where username='ggg';
 
 //插入一些默认的用户,密码使用Md5Utils去加密获得插入
 insert into customer values('11222','ccc','ICy5YqxZB1uWSwcVLSNLcA==','13829961049','广东省湛江市霞山区人民大道2号农垦中心医院','faith_yee@126.com',1,3332221135222123,1);
+
+//购物车订单
+create table orders(
+	id varchar(100) primary key,
+	ordernum varchar(100) not null unique,
+	num int, //总数量
+	price float(8,2), //pay money #总计
+	status int,   //状态值：0not pay  1paied  2send
+	customerid varchar(100),
+	//constraint customer_fk foreign key(customerid) references customer(id)
+	
+)
+
+//购物车订单物品,中间表
+create table ordersitem(
+	id varchar(100) primary key,
+	num int , //数量
+	price float (8,2), //价格  小计
+	bookid varchar(100),
+	ordersid varchar(100),
+	constraint bookid_fk foreign key(bookid) references book(id),
+	constraint ordersid_fk foreign key(ordersid) references orders(id)
+)
