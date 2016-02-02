@@ -1,0 +1,106 @@
+package com.itheima.web.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.itheima.domain.Book;
+import com.itheima.domain.Category;
+import com.itheima.service.BookService;
+import com.itheima.service.CategoryService;
+import com.itheima.service.impl.BookServiceImpl;
+import com.itheima.service.impl.CategoryServiceImpl;
+import com.itheima.utils.PageBean;
+import com.itheima.web.form.Cart;
+
+public class ClientServlet extends HttpServlet {
+	
+	private BookService bs = new BookServiceImpl();
+	private CategoryService cs = new CategoryServiceImpl();
+	
+	private static String SHOWINDEX = "showIndex";
+	private static String BUYBOOK = "buyBook";
+	private static String SHOWCATEGORYPAGERECORDS = "showCategoryPageRecords";
+	
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+			request.setCharacterEncoding("UTF-8");
+			response.setContentType("text/html;charset=UTF-8");
+			
+			String op = request.getParameter("op");
+			
+			if(SHOWINDEX.equals(op)){
+				showIndex(request,response);
+			}else if(SHOWCATEGORYPAGERECORDS.equals(op)){
+				showCategoryPageRecords(request,response);
+			}else if(BUYBOOK.equals(op)){
+				buyBook(request,response);
+			}
+	}
+
+	/**
+	 * 点击购买，页面不动，用户可以手动点击购物车去查看记录，这样会使用到无刷新技术
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void buyBook(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		//1.得到书的id，转化为一个Book对象
+		String bookId = request.getParameter("bookId");
+		Book book = bs.findOne(bookId);
+		//2.将书添加到购物车
+		HttpSession session = request.getSession();
+		Cart cart = (Cart)session.getAttribute("cart");//第一次使用时，不存在
+		if(cart == null){
+			cart = new Cart();
+			session.setAttribute("cart", cart);
+		}
+		//3.将book对象放入购物车
+		cart.addBooks2Cart(book, 1);
+	
+		//4.再调用查询所有书籍的操作
+		showIndex(request, response);
+	}
+
+	private void showCategoryPageRecords(HttpServletRequest request,
+			HttpServletResponse response) {
+		
+	}
+
+	private void showIndex(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		//1.得到分页信息列表
+		List<Category> list = cs.findAllCategorys();
+		//2.得到图书列表，要分页
+		PageBean pb = new PageBean();
+		String pageNo = request.getParameter("pageNo");
+		if(pageNo!=null && !"".equals(pageNo)){
+			pb.setPageNo(Integer.valueOf(pageNo));
+		}
+		
+		//3.分页查询
+		bs.findBooksByPageBean(pb);
+		pb.setUrl(request.getContextPath()+"/servlet/ClientServlet?op=showIndex");
+		
+		//4.放到域中
+		request.setAttribute("cs", list);
+		request.setAttribute("page", pb);
+		
+		//5.转发
+		request.getRequestDispatcher("/listBooks.jsp").forward(request, response);
+	}
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		this.doGet(request, response);
+	}
+
+}
