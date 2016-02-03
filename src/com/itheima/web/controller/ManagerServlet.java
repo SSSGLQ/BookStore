@@ -1,14 +1,27 @@
 package com.itheima.web.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
+
+import com.itheima.domain.Book;
 import com.itheima.domain.Category;
 import com.itheima.service.BookService;
 import com.itheima.service.CategoryService;
@@ -32,6 +45,8 @@ public class ManagerServlet extends HttpServlet {
 	private static String ADDCATEGORY = "addCategory";
 	private static String SHOWALLCATEGORIES = "showAllCategories";
 	private static String SHOWALLBOOKS = "showAllBooks";
+	private static String SHOWADDBOOKUI = "showAddBookUI";
+	private static String ADDBOOK = "addBook";
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
@@ -53,7 +68,89 @@ public class ManagerServlet extends HttpServlet {
 			showAllCategories(request,response);
 		}else if(SHOWALLBOOKS.equals(op)){
 			showAllBooks(request,response);
+		}else if(SHOWADDBOOKUI.equals(op)){
+			showAddBookUI(request,response);
+		}else if(ADDBOOK.equals(op)){
+			addBook(request,response);
 		}
+	}
+
+	/**
+	 * 后台添加图书（文件上传）
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 */
+	private void addBook(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		//1.设置文件上传的保存目录
+		String storePath = getServletContext().getRealPath("/images");
+		File file = new File(storePath);
+		if(!file.exists()){
+			file.mkdirs();
+		}
+		//2.判断是否为enctype=multipart/form-data
+		boolean flag = ServletFileUpload.isMultipartContent(request);
+		if(!flag){
+			response.getWriter().write("没脑子，文件上传时表单的enctype一定是multipart/form-data");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/manager");
+			return ;
+		}
+		//3.得到文件上传对象
+		 DiskFileItemFactory factory = new DiskFileItemFactory();
+		 ServletFileUpload upload = new ServletFileUpload(factory);
+		//4.转化请求，得到List<FileItem>
+		Book book = new Book();
+		try {
+			List<FileItem> list = upload.parseRequest(request);
+			for(FileItem item : list){
+				if(item.isFormField()){
+					//普通字段
+					String fieldName = item.getFieldName();
+					String fieldValue = item.getString("UTF-8");
+					BeanUtils.copyProperty(book, fieldName, fieldValue);
+				}else{
+					//上传字段
+					String fileName = item.getName();
+					fileName = fileName.substring(fileName.lastIndexOf(File.separator)+1);
+					String newFileName = UUID.randomUUID().toString()+"_"+fileName;
+					//存入数据库中和本地中的文件名都是加了UUID，以防文件重名
+					book.setImageName(newFileName);
+					
+					//保存文件
+					InputStream is = item.getInputStream();
+					OutputStream os = new FileOutputStream(storePath+File.separator+newFileName);
+					IOUtils.copy(is,os);
+					is.close();
+					os.close();
+					item.delete();
+				}
+				
+			}
+			
+			//遍历完毕后，给book加入到数据库中
+			book.setId(IDGenerator.genId());
+			bs.addBook(book);
+			showAllBooks(request,response);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//5.遍历
+	}
+
+	/**
+	 * 添加图书--->处理完毕后转发到addBook.jsp（解决展示图书类型数据的展示）
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void showAddBookUI(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		List<Category> list = cs.findAllCategorys();
+		request.setAttribute("cs", list);
+		request.getRequestDispatcher("/manager/addBook.jsp").forward(request, response);
 	}
 
 	/**

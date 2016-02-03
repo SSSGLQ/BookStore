@@ -19,4 +19,6 @@ public interface BookService {
 	public void findBooksByPageBeanAndCategoryId(PageBean pb,String categoryId);
 	
 	public Book findOne(String id );
+
+	public void addBook(Book book);
 }

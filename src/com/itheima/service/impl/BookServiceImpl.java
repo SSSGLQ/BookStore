@@ -23,4 +23,8 @@ public class BookServiceImpl implements BookService{
 		return dao.findOne(id);
 	}
 
+	public void addBook(Book book) {
+		dao.add(book);
+	}
+
 }

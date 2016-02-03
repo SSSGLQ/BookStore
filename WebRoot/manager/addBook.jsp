@@ -1,6 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@include file="/manager/header.jsp"%>
     <h1>添加书籍</h1>
+    <center>
     <form action="${pageContext.request.contextPath}/servlet/ManagerServlet?op=addBook" method="post" enctype="multipart/form-data">
     	<table border="1">
     		<tr>
@@ -50,5 +51,6 @@
     		</tr>
     	</table>
     </form>
+    </center>
   </body>
 </html>
