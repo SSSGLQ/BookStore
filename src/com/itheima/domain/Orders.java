@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ¹ºÎï³µ¶©µ¥
+ * @author yewmf
+ *
+ */
 public class Orders implements Serializable {
 	private String id;
 	private String ordernum;

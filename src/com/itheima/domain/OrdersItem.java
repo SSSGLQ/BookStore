@@ -2,6 +2,11 @@ package com.itheima.domain;
 
 import java.io.Serializable;
 
+/**
+ * 购物车中货物
+ * @author yewmf
+ *
+ */
 public class OrdersItem implements Serializable {
 	private String id;
 	private int num;

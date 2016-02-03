@@ -97,7 +97,6 @@ public class ClientServlet extends HttpServlet {
 		//2.如果登陆了，生成订单
 		//要生成订单，就必须拿到购物车
 		Cart cart = (Cart) session.getAttribute("cart");
-		System.out.println(cart);
 		//购物车对应订单（Orders）   CartItem对应（OrdersItem）
 		Orders o = new Orders();
 		o.setId(IDGenerator.genId());
@@ -127,8 +126,9 @@ public class ClientServlet extends HttpServlet {
 		boolean flag = os.saveOrders(o);
 		
 		if(flag){
+			//清除购物车中原有的数据
+			request.getSession().removeAttribute("cart");
 			request.setAttribute("o", o);//存储订单给jsp使用
-			System.out.println(o);
 			//转发到支付页面（pay.jsp）
 			request.getRequestDispatcher("/pay.jsp").forward(request, response);
 		}else{
