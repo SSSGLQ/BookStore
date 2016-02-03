@@ -1,5 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@include file="/manager/header.jsp"%>
+<center>
     <table border="1" width="438">
     	<tr>
     		<th nowrap="nowrap">选择</th>
@@ -23,5 +24,6 @@
 	    	</tr>
     	</c:forEach>
     </table>
+    </center>
   </body>
 </html>

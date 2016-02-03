@@ -7,4 +7,6 @@ import com.itheima.domain.Category;
 public interface CategoryService {
 
 	public List<Category> findAllCategorys();
+
+	public void addCategory(Category c);
 }
