@@ -29,6 +29,6 @@
   		欢迎您：${sessionScope.user.username}<a href="${pageContext.request.contextPath}/servlet/ClientServlet?op=logout">注销</a>
   </c:if>
   
-  <a href="${pageContext.request.contextPath}">我的订单</a>
+  <a href="${pageContext.request.contextPath}/servlet/ClientServlet?op=showOrders">我的订单</a>
   <a href="${pageContext.request.contextPath}/showCart.jsp">购物车</a>
 	<br/><br/><br/>

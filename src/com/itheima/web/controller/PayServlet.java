@@ -11,6 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.itheima.utils.PaymentUtil;
 import com.itheima.utils.PropertiesUtil;
 
+/**
+ * 封装数据请求第三方支付
+ * @author yewmf
+ *
+ */
 public class PayServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)

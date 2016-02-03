@@ -9,6 +9,11 @@
     <servlet-name>PayServlet</servlet-name>
     <servlet-class>com.itheima.web.controller.PayServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>PaymentResponse</servlet-name>
+    <servlet-class>com.itheima.web.controller.PaymentResponse</servlet-class>
+  </servlet>
+
 
 
   <servlet-mapping>
@@ -18,6 +23,10 @@
   <servlet-mapping>
     <servlet-name>PayServlet</servlet-name>
     <url-pattern>/servlet/PayServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>PaymentResponse</servlet-name>
+    <url-pattern>/servlet/PaymentResponse</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>

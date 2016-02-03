@@ -49,6 +49,8 @@ public class ClientServlet extends HttpServlet {
 	private static String REGIST = "regist";
 	private static String ACTIVED = "actived";
 	private static String GENORDERS = "genOrders";
+	private static String SHOWORDERS = "showOrders";
+	private static String PAYUI = "payUI";
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -73,7 +75,52 @@ public class ClientServlet extends HttpServlet {
 				actived(request,response);
 			}else if(GENORDERS.equals(op)){
 				genOrders(request,response);
+			}else if(SHOWORDERS.equals(op)){
+				showOrders(request,response);
+			}else if(PAYUI.equals(op)){
+				payUI(request,response);
 			}
+	}
+
+	/**
+	 * 查看订单中的未付款中的购买按钮
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void payUI(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//获取参数
+		String ordernum = request.getParameter("ordernum");
+		Orders o = os.getOrdersByOrdernum(ordernum);
+		//把订单保存到reqest并转发到pay.jsp去支付
+		request.setAttribute("o", o);
+		request.getRequestDispatcher("/pay.jsp").forward(request, response);
+		
+	}
+
+	/**
+	 * 首页查看购买成功订单
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void showOrders(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		//1.在session中获取用户
+		Customer c = (Customer) request.getSession().getAttribute("user");
+		if(c==null){
+			response.getWriter().write("您没有登陆，2秒后调转到登陆页");
+			response.setHeader("Refresh", "2;URL="+request.getContextPath()+"/login.jsp");
+			return ;
+		}
+		//2.取出用户所有订单的数据(订单集合)
+		List<Orders> list = os.getAllOrdersByCustomerId(c.getId());
+		request.setAttribute("list", list);
+		
+		//3.转发给页面(显示所有)
+		request.getRequestDispatcher("/listOrders.jsp").forward(request, response);
 	}
 
 	/**
