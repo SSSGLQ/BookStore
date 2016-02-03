@@ -19,6 +19,7 @@ import com.itheima.service.impl.CategoryServiceImpl;
 import com.itheima.service.impl.CustomerServiceImpl;
 import com.itheima.service.impl.OrdersServiceImpl;
 import com.itheima.utils.IDGenerator;
+import com.itheima.utils.PageBean;
 import com.itheima.utils.WebUtils;
 
 /**
@@ -30,6 +31,7 @@ public class ManagerServlet extends HttpServlet {
 	
 	private static String ADDCATEGORY = "addCategory";
 	private static String SHOWALLCATEGORIES = "showAllCategories";
+	private static String SHOWALLBOOKS = "showAllBooks";
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
@@ -49,7 +51,36 @@ public class ManagerServlet extends HttpServlet {
 			addCategory(request,response);
 		}else if(SHOWALLCATEGORIES.equals(op)){
 			showAllCategories(request,response);
+		}else if(SHOWALLBOOKS.equals(op)){
+			showAllBooks(request,response);
 		}
+	}
+
+	/**
+	 * 查询图书---并且分页展示
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void showAllBooks(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		//2.得到图书列表，要分页
+		PageBean pb = new PageBean();
+		String pageNo = request.getParameter("pageNo");
+		if(pageNo!=null && !"".equals(pageNo)){
+			pb.setPageNo(Integer.valueOf(pageNo));
+		}
+		
+		//3.分页查询
+		bs.findBooksByPageBean(pb);
+		pb.setUrl(request.getContextPath()+"/servlet/ManagerServlet?op=showAllBooks");
+		
+		//4.放到域中
+		request.setAttribute("page", pb);
+		
+		//5.转发
+		request.getRequestDispatcher("/manager/listBooks.jsp").forward(request, response);
 	}
 
 	/**

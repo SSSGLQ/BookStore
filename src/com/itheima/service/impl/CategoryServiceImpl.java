@@ -16,5 +16,8 @@ public class CategoryServiceImpl implements CategoryService{
 	public void addCategory(Category c) {
 		dao.add(c);
 	}
+	public Category getCategory(String categoryId) {
+		return dao.findOne(categoryId);
+	}
 
 }
