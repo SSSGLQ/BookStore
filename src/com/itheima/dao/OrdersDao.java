@@ -14,4 +14,9 @@ public interface OrdersDao {
 
 	Orders getOrdersByOrdernum(String ordernum);
 
+	int getCountByMultiSelect(String username, String ordernum, String status);
+
+	List<Orders> getOrdersByMultiSelectAndPage(int startIndex, int pageSize,
+			String username, String ordernum, String status);
+
 }

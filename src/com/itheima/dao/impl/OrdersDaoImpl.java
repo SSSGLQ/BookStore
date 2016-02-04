@@ -1,11 +1,13 @@
 package com.itheima.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import com.itheima.dao.OrdersDao;
 import com.itheima.domain.Orders;
@@ -49,6 +51,60 @@ public class OrdersDaoImpl implements OrdersDao {
 	public Orders getOrdersByOrdernum(String ordernum) {
 		try {
 			return qr.query("select * from orders where ordernum = ?",new BeanHandler<Orders>(Orders.class),ordernum);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	public int getCountByMultiSelect(String username, String ordernum,
+			String status) {
+		String sql = "select count(1) from orders where 1=1 ";
+		List<String> list = new ArrayList<String>();
+		if(username!=null && !username.trim().equals("") && !"null".equals(username)){
+			sql+=" and customerid =(select id from customer where username=?) ";
+			list.add(username);
+		}
+		if(ordernum!=null && !ordernum.trim().equals("") && !"null".equals(ordernum)){
+			sql+=" and ordernum=?";
+			list.add(ordernum);
+		}
+		if(status!=null && !status.trim().equals("") && !"null".equals(status)){
+			sql+=" and status=?";
+			list.add(status);
+				
+		}
+		System.out.println(sql);
+		try {
+			return ((Long)qr.query(sql, new ScalarHandler(),list.toArray())).intValue();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	public List<Orders> getOrdersByMultiSelectAndPage(int startIndex,
+			int pageSize, String username, String ordernum, String status) {
+		String sql = "select * from orders where 1=1 ";
+		List list = new ArrayList();
+		if(username!=null && !username.trim().equals("") && !"null".equals(username)){
+			sql+=" and customerid =(select id from customer where username=?) ";
+			list.add(username);
+		}
+		if(ordernum!=null && !ordernum.trim().equals("") && !"null".equals(ordernum)){
+			sql+=" and ordernum=?";
+			list.add(ordernum);
+		}
+		if(status!=null && !status.trim().equals("") && !"null".equals(status)){
+			sql+=" and status=?";
+			list.add(status);
+				
+		}
+		sql+=" limit ?,?";
+		list.add(startIndex);
+		list.add(pageSize);
+		
+		System.out.println(sql);
+		try {
+			return qr.query(sql, new BeanListHandler<Orders>(Orders.class),list.toArray());
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

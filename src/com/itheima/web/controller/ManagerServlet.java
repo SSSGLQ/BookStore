@@ -51,6 +51,7 @@ public class ManagerServlet extends HttpServlet {
 	private static String LOGINMANAGER = "loginManager";
 	private static String LOGOUT = "logout";
 	private static String ADDCATEGORYUI = "addCategoryUI";
+	private static String ORDERSSELECT = "ordersSelect";
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
@@ -82,7 +83,48 @@ public class ManagerServlet extends HttpServlet {
 			logout(request,response);
 		}else if(ADDCATEGORYUI.equals(op)){
 			addCategoryUI(request,response);
+		}else if(ORDERSSELECT.equals(op)){
+			ordersSelect(request,response);
 		}
+	}
+
+	/**
+	 * 多条件模糊搜索实现订单查询
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void ordersSelect(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		//1.取出三个框的值
+		String username = request.getParameter("username");
+		String ordernum = request.getParameter("ordernum");
+		String status = request.getParameter("status");
+		//2.调用业务，根据组合条件，进行分页查询
+		PageBean pb = new PageBean();
+		String pageNo = request.getParameter("pageNo");
+		if(pageNo!=null){
+			pb.setPageNo(Integer.valueOf(pageNo));
+		}
+		//难点
+		os.getOrdersByMultiSelect(pb,username,ordernum,status);
+		pb.setUrl(request.getContextPath()+"/servlet/ManagerServlet?op=ordersSelect&username="+username+"&ordernum="+ordernum+"&status="+status);
+		//3.将查询结果保存到request域中，
+		request.setAttribute("page", pb);
+		//为了让下拉框等回显数据
+		if(!"null".equals(username)){
+			request.setAttribute("username",username);
+		}
+		if(!"null".equals(ordernum)){
+			request.setAttribute("ordernum",ordernum);
+		}
+		if(!"null".equals(status)){
+			request.setAttribute("status",status);
+		}
+		//4.转发
+		request.getRequestDispatcher("/manager/ordersManager.jsp").forward(request, response);
+		
 	}
 
 	/**

@@ -24,6 +24,5 @@
   <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=showAllCategories">查询分类</a>
   <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=showAddBookUI">添加图书</a>
   <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=showAllBooks">查询图书</a>
-  <a href="javascript:alert('略')">待处理订单</a>
-  <a href="javascript:alert('略')">已处理订单</a>
+  <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=ordersSelect">订单管理</a>
 	<br/><br/><br/>
