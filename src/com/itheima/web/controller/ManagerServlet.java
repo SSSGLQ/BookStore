@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.itheima.domain.Book;
 import com.itheima.domain.Category;
+import com.itheima.domain.Customer;
 import com.itheima.service.BookService;
 import com.itheima.service.CategoryService;
 import com.itheima.service.CustomerService;
@@ -47,6 +48,8 @@ public class ManagerServlet extends HttpServlet {
 	private static String SHOWALLBOOKS = "showAllBooks";
 	private static String SHOWADDBOOKUI = "showAddBookUI";
 	private static String ADDBOOK = "addBook";
+	private static String LOGINMANAGER = "loginManager";
+	private static String LOGOUT = "logout";
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
@@ -72,7 +75,32 @@ public class ManagerServlet extends HttpServlet {
 			showAddBookUI(request,response);
 		}else if(ADDBOOK.equals(op)){
 			addBook(request,response);
+		}else if(LOGINMANAGER.equals(op)){
+			loginManager(request,response);
+		}else if(LOGOUT.equals(op)){
+			logout(request,response);
 		}
+	}
+
+	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.getSession().removeAttribute("loginedUser");
+		response.sendRedirect(request.getContextPath()+"/manager");
+	}
+
+	private void loginManager(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		//1.得到index.jsp里的值
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		//2.调用业务进行查询
+		Customer c = customerservice.login(username, password);
+		//3.判断是否为管理员
+		if(c!=null && c.getRole()==1){
+			//管理员身份
+			request.getSession().setAttribute("loginedUser",c);
+		}
+		response.sendRedirect(request.getContextPath()+"/manager");//回到后台主页
+		
 	}
 
 	/**
