@@ -20,7 +20,7 @@
   <h1>书店后台管理</h1>
   <br/>
   ${msg}
-  <a href="${pageContext.request.contextPath}/manager/addCategory.jsp">添加分类</a>
+  <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=addCategoryUI">添加分类</a>
   <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=showAllCategories">查询分类</a>
   <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=showAddBookUI">添加图书</a>
   <a href="${pageContext.request.contextPath}/servlet/ManagerServlet?op=showAllBooks">查询图书</a>

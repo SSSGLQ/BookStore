@@ -50,6 +50,7 @@ public class ManagerServlet extends HttpServlet {
 	private static String ADDBOOK = "addBook";
 	private static String LOGINMANAGER = "loginManager";
 	private static String LOGOUT = "logout";
+	private static String ADDCATEGORYUI = "addCategoryUI";
 	
 	private BookService bs = new BookServiceImpl();
 	private CategoryService cs = new CategoryServiceImpl();
@@ -79,7 +80,20 @@ public class ManagerServlet extends HttpServlet {
 			loginManager(request,response);
 		}else if(LOGOUT.equals(op)){
 			logout(request,response);
+		}else if(ADDCATEGORYUI.equals(op)){
+			addCategoryUI(request,response);
 		}
+	}
+
+	/**
+	 * ÃÌº”∑÷¿‡
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 */
+	private void addCategoryUI(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		response.sendRedirect(request.getContextPath()+"/manager/addCategory.jsp");
 	}
 
 	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
